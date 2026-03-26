@@ -1,15 +1,30 @@
 [
   {
     "id": 1,
-    "title": "Action Hero",
-    "description": "An epic action-packed adventure of a hero saving the world.",
+    "title": " CI/CD Pipeline using Jenkins, GitHub, Maven, and Docker",
+    "description": "In this video, we will build a Complete CI/CD Pipeline using Jenkins, GitHub, Maven, and Docker for a Java Spring Boot Application step by step. This hands-on DevOps project will help you understand how modern applications are automatically built, packaged, and deployed using automation tools.
+
+You will learn how to integrate GitHub with Jenkins, build a Java application using Maven, create a Docker image, and deploy the application using a Docker container. This is a real-world DevOps workflow used in many companies.
+
+This tutorial is perfect for Beginners and DevOps Engineers who want to understand how CI/CD pipelines work in real projects.",
     "image": "movie1.png",
     "rating": 8.5
   },
   {
     "id": 2,
-    "title": "Mystery Island",
-    "description": "A thrilling journey to uncover the secrets of a mysterious island.",
+    "title": " CI/CD Pipeline from GitHub to AWS EKS",
+    "description": "This project demonstrates how modern DevOps teams automate application build, security scanning, artifact management, containerization, and deployment using industry-standard tools.
+
+🔹 DevSecOps Tools Used in this Project:
+
+• GitHub – Source Code Management
+• Jenkins – CI/CD Pipeline Automation
+• SonarQube – Code Quality & Security Analysis
+• Nexus Repository – Artifact Storage
+• Docker – Containerization
+• Docker Hub – Image Repository
+• Kubernetes – Container Orchestration
+• AWS EKS – Managed Kubernetes Service",
     "image": "movie2.png",
     "rating": 8.2
   },
@@ -29,8 +44,13 @@
   },
   {
     "id": 5,
-    "title": "Comedy Nights",
-    "description": "A hilarious journey full of laughter and fun moments.",
+    "title": "Pipeline Workflow",
+    "description": "1️⃣ Developer pushes code to GitHub
+2️⃣ Jenkins pipeline triggers automatically
+3️⃣ SonarQube performs code quality analysis
+4️⃣ Build artifacts stored in Nexus repository
+5️⃣ Docker image is built and pushed to Docker Hub
+6️⃣ Application deployed to AWS EKS Kubernetes cluster",
     "image": "movie5.png",
     "rating": 8.0
   }
