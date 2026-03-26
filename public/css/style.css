@@ -1,0 +1,51 @@
+body {
+    background-color: #141414;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+    color: #ff6600; /* DevOpsFactor branding */
+}
+
+.movie-card {
+    background-color: #1f1f1f;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #ff6600;
+}
+
+.card-title {
+    color: #fff;
+}
+
+.card-text {
+    color: #ddd;
+}
+
+.navbar {
+    background-color: #000; /* Dark theme */
+}
+
+.btn-primary {
+    background-color: #ff6600;
+    border-color: #ff6600;
+}
+
+.btn-primary:hover {
+    background-color: #e65c00;
+    border-color: #e65c00;
+}
+
+.btn-outline-warning {
+    color: #ff6600;
+    border-color: #ff6600;
+}
+
+.btn-outline-warning:hover {
+    background-color: #ff6600;
+    color: #fff;
+}

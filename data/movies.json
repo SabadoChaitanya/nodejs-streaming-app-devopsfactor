@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "title": "Action Hero",
+    "description": "An epic action-packed adventure of a hero saving the world.",
+    "image": "movie1.png",
+    "rating": 8.5
+  },
+  {
+    "id": 2,
+    "title": "Mystery Island",
+    "description": "A thrilling journey to uncover the secrets of a mysterious island.",
+    "image": "movie2.png",
+    "rating": 8.2
+  },
+  {
+    "id": 3,
+    "title": "Space Odyssey",
+    "description": "An interstellar adventure exploring the unknown cosmos.",
+    "image": "movie3.png",
+    "rating": 9.0
+  },
+  {
+    "id": 4,
+    "title": "Romantic Saga",
+    "description": "A heartwarming story of love, hope, and destiny.",
+    "image": "movie4.png",
+    "rating": 7.8
+  },
+  {
+    "id": 5,
+    "title": "Comedy Nights",
+    "description": "A hilarious journey full of laughter and fun moments.",
+    "image": "movie5.png",
+    "rating": 8.0
+  }
+]

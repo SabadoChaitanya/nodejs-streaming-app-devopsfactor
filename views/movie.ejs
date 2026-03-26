@@ -1,0 +1,7 @@
+<% layout('layout') %>
+
+<h2><%= movie.title %></h2>
+<img src="/images/<%= movie.image %>" alt="<%= movie.title %>" class="img-fluid my-3">
+<p><strong>Description:</strong> <%= movie.description %></p>
+<p><strong>Rating:</strong> <%= movie.rating %> ⭐</p>
+<a href="/" class="btn btn-secondary">Back to Home</a>
