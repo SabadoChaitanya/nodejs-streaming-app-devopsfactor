@@ -1,36 +1,14 @@
-<% layout('layout') %>
+<h2 class="mb-4">🔥 Trending Movies</h2>
 
-<!-- Carousel -->
-<div id="trendingCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <% movies.slice(0,3).forEach((movie, idx) => { %>
-      <div class="carousel-item <%= idx === 0 ? 'active' : '' %>">
-        <img src="/images/<%= movie.image %>" class="d-block w-100" alt="<%= movie.title %>" style="height:400px; object-fit:cover;">
-        <div class="carousel-caption d-none d-md-block">
-          <h5><%= movie.title %></h5>
-          <p>Rating: <%= movie.rating %> ⭐</p>
-        </div>
-      </div>
-    <% }) %>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#trendingCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon"></span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#trendingCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon"></span>
-  </button>
-</div>
-
-<!-- Movie Grid -->
 <div class="row">
   <% movies.forEach(movie => { %>
-    <div class="col-md-4 mb-4">
-      <div class="card movie-card h-100">
-        <img src="/images/<%= movie.image %>" class="card-img-top" alt="<%= movie.title %>">
+    <div class="col-md-3 mb-4">
+      <div class="card bg-dark text-white h-100">
+        <img src="/images/<%= movie.image %>" class="card-img-top" alt="movie">
         <div class="card-body">
           <h5 class="card-title"><%= movie.title %></h5>
-          <p class="card-text">Rating: <%= movie.rating %> ⭐</p>
-          <a href="/movie/<%= movie.id %>" class="btn btn-primary">View Details</a>
+          <p>⭐ <%= movie.rating %></p>
+          <a href="/movie/<%= movie.id %>" class="btn btn-warning btn-sm">View Details</a>
         </div>
       </div>
     </div>
