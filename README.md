@@ -1,74 +1,95 @@
 # 🚀 DevOpsFactor Streaming App
 
-A full-stack Node.js streaming-style web application built with Express and EJS, containerized using Docker, and deployed on AWS.
-
-This project demonstrates a real-world DevOps and DevSecOps workflow including CI/CD, containerization, security scanning, and Kubernetes deployment using AWS EKS (Fargate).
+![Node.js](https://img.shields.io/badge/Node.js-18-green)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
+![AWS](https://img.shields.io/badge/AWS-Cloud-orange)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-EKS-blueviolet)
+![CI/CD](https://img.shields.io/badge/CI/CD-Jenkins-red)
+![Security](https://img.shields.io/badge/Security-Trivy%20%7C%20OWASP-yellow)
 
 ---
 
-## 📸 Project Overview
+## 🎬 Project Preview (GIF)
 
-- 🎬 Movie streaming UI (Netflix-style)
-- 📦 Backend with Node.js & Express
-- 🎨 Frontend using EJS templates
-- 🐳 Containerized using Docker
-- ☁️ Deployed on AWS EC2
-- 🚀 Kubernetes deployment using AWS EKS (Fargate)
-- 🔐 DevSecOps pipeline with security tools
+> 🔥 Add your app demo GIF here (record using screen recorder & upload to repo)
+
+![App Demo](./public/images/demo.gif)
+
+---
+
+## 📌 About Project
+
+A **Netflix-style streaming web application** built using **Node.js, Express, and EJS**, integrated with a **complete DevOps & DevSecOps pipeline**.
+
+This project demonstrates **real-world production workflow**:
+
+👉 Code → Build → Scan → Deploy → Secure 🚀
+
+---
+
+## 🏗️ Architecture Diagram
+
+```text
+                👨‍💻 Developer
+                      │
+                      ▼
+                  GitHub Repo
+                      │
+                      ▼
+               ⚙️ Jenkins Pipeline
+                      │
+        ┌─────────────┼─────────────┐
+        ▼                             ▼
+ 🔍 SonarQube                  🔐 Trivy Scan
+ (Code Quality)           (Container Security)
+        │                             │
+        └─────────────┬─────────────┘
+                      ▼
+               🐳 Docker Build
+                      │
+                      ▼
+               📦 Docker Image
+                      │
+                      ▼
+            ☸️ AWS EKS (Fargate)
+                      │
+                      ▼
+                🌐 End Users
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-- Node.js
-- Express.js
-- EJS
-- Docker
-- AWS EC2
-- AWS EKS (Fargate)
-- Jenkins (CI/CD)
-- SonarQube (Code Quality)
-- Trivy (Container Security)
-- OWASP ZAP (Security Testing)
+| Category         | Tools                      |
+| ---------------- | -------------------------- |
+| Backend          | Node.js, Express.js        |
+| Frontend         | EJS, CSS                   |
+| Containerization | Docker                     |
+| Cloud            | AWS EC2, AWS EKS (Fargate) |
+| CI/CD            | Jenkins                    |
+| Code Quality     | SonarQube                  |
+| Security         | Trivy, OWASP ZAP           |
 
 ---
 
-## ⚙️ Project Architecture
-Developer → GitHub → Jenkins Pipeline → SonarQube → Docker Build → Trivy Scan → Docker Hub → EKS (Fargate) Deployment
-## Project Structure
+## 📂 Project Structure
+
+```bash
 ├── app.js
 ├── package.json
 ├── data/
-│ └── movies.json
+│   └── movies.json
 ├── public/
-│ ├── css/
-│ │ └── style.css
-│ └── images/
+│   ├── css/
+│   └── images/
 ├── views/
-│ ├── layout.ejs
-│ ├── index.ejs
-│ ├── movie.ejs
-│ ├── login.ejs
-│ └── signup.ejs
-# 🚀 DevOpsFactor Streaming App
-
-A full-stack Node.js streaming-style web application built with Express and EJS, containerized using Docker, and deployed on AWS.
-
-This project demonstrates a real-world DevOps and DevSecOps workflow including CI/CD, containerization, security scanning, and Kubernetes deployment using AWS EKS (Fargate).
-
----
-
-## 📸 Project Overview
-
-- 🎬 Movie streaming UI (Netflix-style)
-- 📦 Backend with Node.js & Express
-- 🎨 Frontend using EJS templates
-- 🐳 Containerized using Docker
-- ☁️ Deployed on AWS EC2
-- 🚀 Kubernetes deployment using AWS EKS (Fargate)
-- 🔐 DevSecOps pipeline with security tools
-
----
+│   ├── layout.ejs
+│   ├── index.ejs
+│   ├── movie.ejs
+│   ├── login.ejs
+│   └── signup.ejs
+```
 
 ---
 
@@ -79,57 +100,95 @@ git clone https://github.com/rakesh-perala/nodejs-streaming-app-devopsfactor.git
 cd nodejs-streaming-app-devopsfactor
 npm install
 node app.js
+```
 
+👉 Open:
+
+```
+http://localhost:3000
+```
 
 ---
 
-## 🚀 Run Locally
+## 🐳 Docker Setup
 
-Open:
+### Build Image
 
-http://localhost:3000
-🐳 Docker Setup
-Build Image
+```bash
 docker build -t devopsfactor-app .
-Run Container
-docker run -d -p 3000:3000 devopsfactor-app
-☁️ AWS EC2 Deployment
-Launch EC2 instance
-Install Docker
-Clone repository
-Build and run container
-Access app via public IP
-☸️ Kubernetes Deployment (EKS Fargate)
-Deployment
+```
+
+### Run Container
+
+```bash
+docker run -d -p 3000:3000 --name devops-app devopsfactor-app
+```
+
+---
+
+## ☁️ AWS EC2 Deployment
+
+* Launch EC2 instance
+* Install Docker
+* Clone repo
+* Build & run container
+
+👉 Access:
+
+```
+http://<EC2-PUBLIC-IP>:3000
+```
+
+---
+
+## ☸️ Kubernetes Deployment (EKS Fargate)
+
+```bash
 kubectl apply -f deployment.yaml
-Service
 kubectl apply -f service.yaml
-🔐 DevSecOps Pipeline
-✔ Jenkins for CI/CD automation
-✔ SonarQube for code quality analysis
-✔ Trivy for container vulnerability scanning
-✔ OWASP ZAP for application security testing
-🎯 Features
-Movie listing with posters
-Movie detail pages
-Responsive UI
-Clean project structure
-Cloud deployment ready
-📌 Future Enhancements
-Add authentication (JWT)
-Upload custom videos
-CI/CD with GitHub Actions
-Domain + HTTPS (SSL)
-Monitoring with CloudWatch
-👨‍💻 Author
+```
 
-DevOpsFactor (Rakesh)
+---
 
-⭐ Support
+## 🔐 DevSecOps Pipeline
+
+✔ Jenkins – CI/CD automation
+✔ SonarQube – Code quality analysis
+✔ Trivy – Vulnerability scanning
+✔ OWASP ZAP – Security testing
+
+---
+
+## 🎯 Features
+
+* 🎬 Movie streaming UI
+* 📄 Movie details page
+* 📱 Responsive design
+* 🧩 Clean architecture
+* ☁️ Cloud-ready
+
+---
+
+## 🚀 Future Enhancements
+
+* 🔐 JWT Authentication
+* 📤 Upload videos
+* ⚙️ GitHub Actions CI/CD
+* 🌐 Custom domain + HTTPS
+* 📊 Monitoring (CloudWatch / Prometheus)
+
+---
+
+## 👨‍💻 Author
+
+**Rakesh (DevOpsFactor)** 🚀
+
+---
+
+## ⭐ Support
 
 If you like this project:
 
-⭐ Star this repo
+⭐ Star the repo
 📢 Share with others
-🎥 Watch the YouTube tutorial
-
+🚀 Keep building DevOps projects
