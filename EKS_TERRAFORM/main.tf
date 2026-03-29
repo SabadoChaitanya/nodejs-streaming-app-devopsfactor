@@ -5,10 +5,33 @@ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
+# -----------------------------
+# Get Availability Zones
+# -----------------------------
+data "aws_availability_zones" "available" {}
+
+# -----------------------------
+# Create PRIVATE Subnets (IMPORTANT)
+# -----------------------------
+resource "aws_subnet" "private_subnet_1" {
+  vpc_id                  = data.aws_vpc.default.id
+  cidr_block              = "172.31.100.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "private-subnet-1"
+  }
+}
+
+resource "aws_subnet" "private_subnet_2" {
+  vpc_id                  = data.aws_vpc.default.id
+  cidr_block              = "172.31.101.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[1]
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "private-subnet-2"
   }
 }
 
@@ -40,7 +63,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 }
 
 # -----------------------------
-# EKS Cluster
+# EKS Cluster (USE PRIVATE SUBNETS)
 # -----------------------------
 resource "aws_eks_cluster" "eks_cluster" {
   name     = "devops-eks-cluster"
@@ -52,7 +75,10 @@ resource "aws_eks_cluster" "eks_cluster" {
   }
 
   vpc_config {
-    subnet_ids = data.aws_subnets.default.ids
+    subnet_ids = [
+      aws_subnet.private_subnet_1.id,
+      aws_subnet.private_subnet_2.id
+    ]
   }
 
   depends_on = [
@@ -88,14 +114,17 @@ resource "aws_iam_role_policy_attachment" "fargate_policy" {
 }
 
 # -----------------------------
-# Fargate Profile (default namespace)
+# Fargate Profile (USE PRIVATE SUBNETS)
 # -----------------------------
 resource "aws_eks_fargate_profile" "fargate_profile" {
   cluster_name           = aws_eks_cluster.eks_cluster.name
   fargate_profile_name   = "devops-fargate-profile"
   pod_execution_role_arn = aws_iam_role.fargate_pod_execution_role.arn
 
-  subnet_ids = data.aws_subnets.default.ids
+  subnet_ids = [
+    aws_subnet.private_subnet_1.id,
+    aws_subnet.private_subnet_2.id
+  ]
 
   selector {
     namespace = "default"
