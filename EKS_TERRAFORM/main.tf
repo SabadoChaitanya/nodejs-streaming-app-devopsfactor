@@ -1,11 +1,4 @@
 # -----------------------------
-# Provider
-# -----------------------------
-provider "aws" {
-  region = "ap-south-1"  # change if needed
-}
-
-# -----------------------------
 # Get Default VPC
 # -----------------------------
 data "aws_vpc" "default" {
@@ -20,130 +13,151 @@ data "aws_subnets" "default" {
 }
 
 # -----------------------------
-# Private Subnets (update tags)
+# IAM Role for EKS Cluster
 # -----------------------------
-resource "aws_subnet" "private_subnet_1" {
-  id = "subnet-0fa21ef1f0a8c9922" # your private subnet
-  tags = {
-    Name    = "private-subnet-1"
-    Owner   = "DevOpsFactory"
-    Project = "DevOps-EKS"
-    Tier    = "private"
+data "aws_iam_policy_document" "eks_cluster_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
   }
 }
 
-resource "aws_subnet" "private_subnet_2" {
-  id = "subnet-08e05736e563c3434" # your private subnet
-  tags = {
-    Name    = "private-subnet-2"
-    Owner   = "DevOpsFactory"
-    Project = "DevOps-EKS"
-    Tier    = "private"
-  }
+resource "aws_iam_role" "eks_cluster_role" {
+  name = "eks-cluster-role"
+
+  assume_role_policy = data.aws_iam_policy_document.eks_cluster_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+  role       = aws_iam_role.eks_cluster_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
 # -----------------------------
-# EKS Cluster (match existing version!)
+# Create EKS Cluster
 # -----------------------------
 resource "aws_eks_cluster" "eks_cluster" {
   name     = "devops-eks-cluster"
-  role_arn = "arn:aws:iam::679968874516:role/eks-cluster-role" # your cluster IAM role
+  role_arn = aws_iam_role.eks_cluster_role.arn
+  version  = "1.29"
 
-  version = "1.32" # match existing to avoid downgrade
+  access_config {
+    authentication_mode = "API_AND_CONFIG_MAP"
+  }
 
   vpc_config {
-    subnet_ids = [
-      aws_subnet.private_subnet_1.id,
-      aws_subnet.private_subnet_2.id
-    ]
-    endpoint_private_access = true
-    endpoint_public_access  = true
+    subnet_ids = data.aws_subnets.default.ids
   }
 
-  tags = {
-    Owner   = "DevOpsFactory"
-    Project = "DevOps-EKS"
-  }
-}
-
-# -----------------------------
-# IAM Role for Fargate Pod Execution
-# -----------------------------
-resource "aws_iam_role" "eks_fargate_pod_execution_role" {
-  name = "eks-fargate-pod-execution-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action    = "sts:AssumeRole"
-      Effect    = "Allow"
-      Principal = {
-        Service = "eks-fargate-pods.amazonaws.com"
-      }
-    }]
-  })
-
-  tags = {
-    Owner   = "DevOpsFactory"
-    Project = "DevOps-EKS"
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "eks_fargate_attach" {
-  role       = aws_iam_role.eks_fargate_pod_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-}
-
-# -----------------------------
-# Fargate Profile
-# -----------------------------
-resource "aws_eks_fargate_profile" "fargate_profile" {
-  cluster_name           = aws_eks_cluster.eks_cluster.name
-  fargate_profile_name   = "devops-fargate-profile"
-  pod_execution_role_arn = aws_iam_role.eks_fargate_pod_execution_role.arn
-  subnet_ids             = [
-    aws_subnet.private_subnet_1.id,
-    aws_subnet.private_subnet_2.id
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_cluster_policy
   ]
+}
 
-  selector {
-    namespace = "default"
+# -----------------------------
+# IAM Role for Worker Nodes
+# -----------------------------
+data "aws_iam_policy_document" "eks_node_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "eks_node_role" {
+  name = "eks-node-role"
+
+  assume_role_policy = data.aws_iam_policy_document.eks_node_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "worker_node_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "cni_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+# -----------------------------
+# Node Group
+# -----------------------------
+resource "aws_eks_node_group" "eks_nodes" {
+  cluster_name    = aws_eks_cluster.eks_cluster.name
+  node_group_name = "devops-node-group"
+  node_role_arn   = aws_iam_role.eks_node_role.arn
+
+  subnet_ids = data.aws_subnets.default.ids
+
+  instance_types = ["t3.medium"]
+
+  scaling_config {
+    desired_size = 2
+    max_size     = 3
+    min_size     = 1
   }
 
-  tags = {
-    Owner   = "DevOpsFactory"
-    Project = "DevOps-EKS"
+  depends_on = [
+    aws_iam_role_policy_attachment.worker_node_policy,
+    aws_iam_role_policy_attachment.cni_policy,
+    aws_iam_role_policy_attachment.ecr_policy
+  ]
+}
+
+# -----------------------------
+# EKS Access for IAM User
+# -----------------------------
+resource "aws_eks_access_entry" "admin_access" {
+  cluster_name  = aws_eks_cluster.eks_cluster.name
+  principal_arn = "arn:aws:iam::679968874516:user/devops-admin"
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "admin_policy" {
+  cluster_name  = aws_eks_cluster.eks_cluster.name
+  principal_arn = "arn:aws:iam::679968874516:user/devops-admin"
+
+  policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
   }
 }
 
 # -----------------------------
-# Admin IAM Role
+# EKS Access for Root
 # -----------------------------
-resource "aws_iam_role" "eks_admin_role" {
-  name = "EKS-Admin-Role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = "sts:AssumeRole"
-        Principal = {
-          AWS = "arn:aws:iam::679968874516:root"
-        }
-      }
-    ]
-  })
-
-  max_session_duration = 3600
-
-  tags = {
-    Owner   = "DevOpsFactory"
-    Project = "DevOps-EKS"
-  }
+resource "aws_eks_access_entry" "root_access" {
+  cluster_name  = aws_eks_cluster.eks_cluster.name
+  principal_arn = "arn:aws:iam::679968874516:root"
+  type          = "STANDARD"
 }
 
-resource "aws_iam_role_policy_attachment" "eks_admin_attach" {
-  role       = aws_iam_role.eks_admin_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+resource "aws_eks_access_policy_association" "root_admin" {
+  cluster_name  = aws_eks_cluster.eks_cluster.name
+  principal_arn = "arn:aws:iam::679968874516:root"
+
+  policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
 }
